@@ -1,14 +1,13 @@
 /*
-	bfs
-	This problem requires you to implement a basic BFS algorithm
+    bfs
+    This problem requires you to implement a basic BFS algorithm
 */
 
-//I AM NOT DONE
 use std::collections::VecDeque;
 
 // Define a graph
 struct Graph {
-    adj: Vec<Vec<usize>>, 
+    adj: Vec<Vec<usize>>,
 }
 
 impl Graph {
@@ -21,20 +20,37 @@ impl Graph {
 
     // Add an edge to the graph
     fn add_edge(&mut self, src: usize, dest: usize) {
-        self.adj[src].push(dest); 
-        self.adj[dest].push(src); 
+        self.adj[src].push(dest);
+        self.adj[dest].push(src);
     }
 
     // Perform a breadth-first search on the graph, return the order of visited nodes
     fn bfs_with_return(&self, start: usize) -> Vec<usize> {
-        
-		//TODO
+        let n = self.adj.len(); // 获取节点数量
+        let mut visited = vec![false; n]; // 记录节点是否被访问
+        let mut queue = VecDeque::new(); // 队列用于存储待访问节点
+        let mut visit_order = vec![]; // 记录访问顺序
 
-        let mut visit_order = vec![];
+        // 将起始节点加入队列并标记为已访问
+        queue.push_back(start);
+        visited[start] = true;
+
+        // 开始 BFS 遍历
+        while let Some(node) = queue.pop_front() {
+            visit_order.push(node); // 记录当前节点
+
+            // 遍历当前节点的所有邻居
+            for &neighbor in &self.adj[node] {
+                if !visited[neighbor] {
+                    visited[neighbor] = true; // 标记为已访问
+                    queue.push_back(neighbor); // 加入队列
+                }
+            }
+        }
+
         visit_order
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -84,4 +100,3 @@ mod tests {
         assert_eq!(visited_order, vec![0]);
     }
 }
-

@@ -1,8 +1,7 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This problem requires you to implement a basic heap
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +36,12 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        // 将新元素添加到堆的末尾
+        self.items.push(value);
+        self.count += 1;
+
+        // 上浮调整堆
+        self.heapify_up(self.count);
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +61,41 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left_idx = self.left_child_idx(idx);
+        let right_idx = self.right_child_idx(idx);
+
+        if right_idx > self.count {
+            return left_idx; // 只有左子节点
+        }
+
+        // 根据比较器选择较小/较大的子节点
+        if (self.comparator)(&self.items[left_idx], &self.items[right_idx]) {
+            left_idx
+        } else {
+            right_idx
+        }
+    }
+
+    fn heapify_up(&mut self, mut idx: usize) {
+        while idx > 1 {
+            let parent_idx = self.parent_idx(idx);
+            if !(self.comparator)(&self.items[idx], &self.items[parent_idx]) {
+                break;
+            }
+            self.items.swap(idx, parent_idx);
+            idx = parent_idx;
+        }
+    }
+
+    fn heapify_down(&mut self, mut idx: usize) {
+        while self.children_present(idx) {
+            let child_idx = self.smallest_child_idx(idx);
+            if !(self.comparator)(&self.items[child_idx], &self.items[idx]) {
+                break;
+            }
+            self.items.swap(idx, child_idx);
+            idx = child_idx;
+        }
     }
 }
 
@@ -84,8 +121,21 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+
+        // 交换根节点与最后一个节点
+        self.items.swap(1, self.count);
+        let value = self.items.pop();
+        self.count -= 1;
+
+        // 下沉调整堆
+        if self.count > 0 {
+            self.heapify_down(1);
+        }
+
+        value
     }
 }
 
@@ -116,6 +166,7 @@ impl MaxHeap {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn test_empty_heap() {
         let mut heap = MaxHeap::new::<i32>();
